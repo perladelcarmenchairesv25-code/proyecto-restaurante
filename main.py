@@ -8,6 +8,7 @@ def navegar_a(page: ft.Page):
     page.padding = 0
     page.bgcolor = "#FDF5E6"
     
+    # Base de datos global en memoria
     if not hasattr(page, "productos"):
         page.productos = {
             "COMIDA": [
@@ -24,18 +25,28 @@ def navegar_a(page: ft.Page):
 
     def cambiar_ruta(ruta):
         page.controls.clear()
+        page.update() # Limpia cualquier residuo visual previo del canvas web
+        
         if ruta == "/home" or ruta == "/":
             vista = HomeView(page, cambiar_ruta)
-            page.add(vista.content)
+            if hasattr(vista, "content"):
+                vista.content.expand = True
+                page.add(vista.content)
         elif ruta == "/admin_login":
             vista = AdminLoginView(page, cambiar_ruta)
-            page.add(vista.content)
+            if hasattr(vista, "content"):
+                vista.content.expand = True
+                page.add(vista.content)
         elif ruta == "/admin_panel":
             vista = AdminPanelView(page, cambiar_ruta)
-            page.add(vista.content)
+            if hasattr(vista, "content"):
+                vista.content.expand = True
+                page.add(vista.content)
+                
         page.update()
 
+    # Arrancar directo en la ventana de bienvenida
     cambiar_ruta("/home")
 
-# Obligamos a Flet a usar el motor web nativo de una vez
+# Firma obligatoria para producción en servidores Linux (Render)
 ft.app(target=navegar_a, view=ft.AppView.WEB_BROWSER)

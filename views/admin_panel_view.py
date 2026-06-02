@@ -65,27 +65,16 @@ class AdminPanelView:
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN
         )
 
-        # 1. Creamos las pestañas vacías primero
+        # Configuración de Pestañas compatible con versiones retro
         tab1 = ft.Tab()
-        tab1.label = "Gestión Base" # ¡CORREGIDO! Usamos estrictamente '.label'
+        tab1.label = "Gestión Base"
 
         tab2 = ft.Tab()
-        tab2.label = "Menú del Día" # ¡CORREGIDO! Usamos estrictamente '.label'
+        tab2.label = "Menú del Día"
 
-        # 2. Configuración de la barra de pestañas (TabBar)
-        barra_pestanas = ft.TabBar(
-            tabs=[tab1, tab2]
-        )
+        barra_pestanas = ft.TabBar(tabs=[tab1, tab2])
+        vista_pestanas = ft.TabBarView(controls=[pestana_gestion, pestana_disponibilidad])
 
-        # 3. Contenedor de las vistas (TabBarView)
-        vista_pestanas = ft.TabBarView(
-            controls=[
-                pestana_gestion,
-                pestana_disponibilidad
-            ]
-        )
-
-        # 4. Inicialización de las Tabs principales de la página
         self.tabs = ft.Tabs(
             length=2,
             content=ft.Column([

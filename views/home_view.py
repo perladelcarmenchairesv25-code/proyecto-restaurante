@@ -1,104 +1,61 @@
 import flet as ft
 
 class HomeView:
-    # Recibe 'navegar_fun' desde main.py para gestionar los cambios de ventana
     def __init__(self, page: ft.Page, navegar_fun):
         self.page = page
         self.navegar_fun = navegar_fun
 
-        # Título de la sección
-        self.header = ft.Text(
-            "Selecciona una categoría",
-            size=28,
-            weight=ft.FontWeight.BOLD,
-            color=ft.Colors.GREEN_900
+        # Título principal
+        titulo = ft.Text("¡Bienvenidos al Restaurante!", size=28, weight="bold", color=ft.Colors.GREEN_900)
+        subtitulo = ft.Text("Selecciona tus platillos favoritos del menú del día", size=14, color=ft.Colors.BLACK54)
+
+        # Contenedor donde se cargarán los productos dinámicamente
+        self.menu_clientes = ft.Column(spacing=15, scroll=ft.ScrollMode.AUTO, expand=True)
+        self.cargar_menu_publico()
+
+        # Botón para ir al Login de Admin
+        btn_admin = ft.ElevatedButton(
+            content=ft.Text("Panel Administrador", color=ft.Colors.WHITE),
+            style=ft.ButtonStyle(bgcolor="#2D5A27"),
+            on_click=lambda _: self.navegar_fun("/admin_login")
         )
 
-        # Función auxiliar para maquetar de forma idéntica las tres categorías principales
-        def crear_opcion_menu(titulo, ruta_imagen):
-            return ft.Container(
-                content=ft.Stack(
-                    [
-                        # 1. Imagen de fondo de la categoría
-                        ft.Image(
-                            src=ruta_imagen,
-                            fit="cover",
-                            expand=True,
-                            border_radius=20
-                        ),
-                        # 2. Capa oscura semitransparente para asegurar el contraste del texto
-                        ft.Container(
-                            bgcolor=ft.Colors.with_opacity(0.4, ft.Colors.BLACK),
-                            border_radius=20
-                        ),
-                        # 3. Texto con el nombre de la categoría completamente centrado
-                        ft.Container(
-                            content=ft.Text(
-                                titulo, 
-                                size=24, 
-                                weight="bold", 
-                                color=ft.Colors.WHITE
-                            ),
-                            alignment=ft.Alignment(0, 0)
-                        )
-                    ]
-                ),
-                width=320,
-                height=140,
-                border_radius=20,
-                # Al hacer clic, envía la ruta con el nombre de la categoría seleccionada
-                on_click=lambda _: self.navegar_fun(f"/menu_{titulo}")
-            )
-
-        # Creación de las tarjetas conectadas a las imágenes en la carpeta assets
-        self.card_comida = crear_opcion_menu("COMIDA", "/comida.png")
-        self.card_bebidas = crear_opcion_menu("BEBIDAS", "/bebidas.png")
-        self.card_postres = crear_opcion_menu("POSTRES", "/postres.png")
-
-        # Botón alargado, discreto y minimalista para acceder al sector de administración
-        self.btn_admin = ft.TextButton(
-            content=ft.Text(
-                "Panel de Administración", 
-                color=ft.Colors.GREEN_900, 
-                size=14,
-                weight="bold"
-            ),
-            style=ft.ButtonStyle(
-                shape=ft.RoundedRectangleBorder(radius=10),
-            ),
-            on_click=self.admin_click
-        )
-
-        # Construcción de la interfaz de la pantalla completa
+        # Contenedor padre de la vista (¡Obligatorio expand=True para Web!)
         self.content = ft.Container(
             content=ft.Column(
                 [
-                    ft.Image(src="/logo.png", width=80),
-                    self.header,
-                    ft.Container(height=15),
-                    self.card_comida,
-                    self.card_bebidas,
-                    self.card_postres,
-                    
-                    # Espacio de separación antes del botón de administración
-                    ft.Container(height=30), 
-                    
-                    # El botón del Administrador
-                    self.btn_admin,
-                    
-                    # Contenedor de separación inferior que eleva el botón de forma segura
-                    ft.Container(height=20)
-                ], # <- CORRECCIÓN: Aquí cerramos correctamente el corchete de la lista de controles
-                alignment=ft.MainAxisAlignment.CENTER,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                scroll=ft.ScrollMode.AUTO
+                    ft.Row([titulo, btn_admin], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                    subtitulo,
+                    ft.Divider(height=20),
+                    self.menu_clientes
+                ],
+                expand=True
             ),
-            alignment=ft.Alignment(0, 0),
             expand=True,
             bgcolor="#FDF5E6",
             padding=20
         )
 
-    # Función encargada de redirigir al Login de Administración al pulsar el botón inferior
-    def admin_click(self, e):
-        self.navegar_fun("/admin_login")
+    def cargar_menu_publico(self):
+        self.menu_clientes.controls.clear()
+        
+        # Leemos la base de datos global compartida en page.productos
+        for categoria, lista_items in self.page.productos.items():
+            self.menu_clientes.controls.append(
+                ft.Text(f"--- {categoria} ---", size=18, weight="bold", color=ft.Colors.GREEN_700)
+            )
+            for item in lista_items:
+                # Solo mostramos el platillo si está marcado como disponible por el administrador
+                if item["disponible"]:
+                    tarjeta = ft.Container(
+                        content=ft.Column([
+                            ft.Text(item["nombre"], size=16, weight="bold", color=ft.Colors.BLACK),
+                            ft.Text(item["desc"], size=13, color=ft.Colors.BLACK54),
+                            ft.Text(item["precio"], size=14, weight="bold", color=ft.Colors.GREEN_800),
+                        ]),
+                        padding=10,
+                        bgcolor=ft.Colors.WHITE,
+                        border_radius=8,
+                        border=ft.border.all(1, ft.Colors.GREY_300)
+                    )
+                    self.menu_clientes.controls.append(tarjeta)
