@@ -5,22 +5,18 @@ class HomeView:
         self.page = page
         self.navegar_fun = navegar_fun
 
-        # Título principal
         titulo = ft.Text("¡Bienvenidos al Restaurante!", size=28, weight="bold", color=ft.Colors.GREEN_900)
         subtitulo = ft.Text("Selecciona tus platillos favoritos del menú del día", size=14, color=ft.Colors.BLACK54)
 
-        # Contenedor donde se cargarán los productos dinámicamente
         self.menu_clientes = ft.Column(spacing=15, scroll=ft.ScrollMode.AUTO, expand=True)
         self.cargar_menu_publico()
 
-        # Botón para ir al Login de Admin
         btn_admin = ft.ElevatedButton(
             content=ft.Text("Panel Administrador", color=ft.Colors.WHITE),
             style=ft.ButtonStyle(bgcolor="#2D5A27"),
             on_click=lambda _: self.navegar_fun("/admin_login")
         )
 
-        # Contenedor padre de la vista (¡Obligatorio expand=True para Web!)
         self.content = ft.Container(
             content=ft.Column(
                 [
@@ -39,13 +35,11 @@ class HomeView:
     def cargar_menu_publico(self):
         self.menu_clientes.controls.clear()
         
-        # Leemos la base de datos global compartida en page.productos
         for categoria, lista_items in self.page.productos.items():
             self.menu_clientes.controls.append(
                 ft.Text(f"--- {categoria} ---", size=18, weight="bold", color=ft.Colors.GREEN_700)
             )
             for item in lista_items:
-                # Solo mostramos el platillo si está marcado como disponible por el administrador
                 if item["disponible"]:
                     tarjeta = ft.Container(
                         content=ft.Column([
@@ -56,6 +50,11 @@ class HomeView:
                         padding=10,
                         bgcolor=ft.Colors.WHITE,
                         border_radius=8,
-                        border=ft.border.all(1, ft.Colors.GREY_300)
+                        border=ft.Border(
+                            top=ft.BorderSide(1, ft.Colors.GREY_300),
+                            bottom=ft.BorderSide(1, ft.Colors.GREY_300),
+                            left=ft.BorderSide(1, ft.Colors.GREY_300),
+                            right=ft.BorderSide(1, ft.Colors.GREY_300)
+                        )
                     )
                     self.menu_clientes.controls.append(tarjeta)

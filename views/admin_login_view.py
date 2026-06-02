@@ -21,7 +21,6 @@ class AdminLoginView:
             on_click=lambda _: self.navegar_fun("/home")
         )
 
-        # Contenedor padre centrado y expandido
         self.content = ft.Container(
             content=ft.Column(
                 [
@@ -42,7 +41,6 @@ class AdminLoginView:
         )
 
     def verificar_credenciales(self, e):
-        # Credenciales de prueba fijas
         if self.txt_user.value == "admin" and self.txt_pass.value == "1234":
             self.lbl_error.value = ""
             self.navegar_fun("/admin_panel")

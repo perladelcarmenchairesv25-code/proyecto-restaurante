@@ -5,7 +5,6 @@ class AdminPanelView:
         self.page = page
         self.navegar_fun = navegar_fun
 
-        # Componentes para AGREGAR nuevo producto
         self.dd_categoria = ft.Dropdown(
             label="Categoría",
             options=[
@@ -19,14 +18,11 @@ class AdminPanelView:
         self.txt_desc = ft.TextField(label="Descripción breve", width=320, bgcolor=ft.Colors.WHITE, color=ft.Colors.BLACK)
         self.txt_precio = ft.TextField(label="Precio (Ej: $4.50)", width=320, bgcolor=ft.Colors.WHITE, color=ft.Colors.BLACK)
 
-        # Contenedores dinámicos para las listas
         self.lista_eliminar = ft.Column(spacing=10, scroll=ft.ScrollMode.AUTO, height=400)
         self.lista_disponibilidad = ft.Column(spacing=10, scroll=ft.ScrollMode.AUTO, height=500)
 
-        # Cargar los datos iniciales
         self.actualizar_listas_admin()
 
-        # PESTAÑA 1: Formulario Agregar + Lista Eliminar
         pestana_gestion = ft.Column(
             [
                 ft.Text("Añadir Producto", size=18, weight="bold", color=ft.Colors.GREEN_900),
@@ -46,7 +42,6 @@ class AdminPanelView:
             scroll=ft.ScrollMode.AUTO
         )
 
-        # PESTAÑA 2: Control de disponibilidad (Menú del día)
         pestana_disponibilidad = ft.Column(
             [
                 ft.Text("Disponibilidad del Día", size=18, weight="bold", color=ft.Colors.GREEN_900),
@@ -56,7 +51,6 @@ class AdminPanelView:
             ]
         )
 
-        # Diseño de la barra superior
         header = ft.Row(
             [
                 ft.Text("Panel Admin", size=24, weight="bold", color=ft.Colors.GREEN_900),
@@ -65,7 +59,6 @@ class AdminPanelView:
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN
         )
 
-        # Configuración de Pestañas compatible con versiones retro
         tab1 = ft.Tab()
         tab1.label = "Gestión Base"
 
@@ -84,7 +77,6 @@ class AdminPanelView:
             expand=1
         )
 
-        # Contenedor padre de la vista
         self.content = ft.Container(
             content=ft.Column([header, ft.Container(height=10), self.tabs], expand=True),
             expand=True,
@@ -101,7 +93,6 @@ class AdminPanelView:
             self.lista_disponibilidad.controls.append(ft.Text(f"--- {cat} ---", weight="bold", color=ft.Colors.GREEN_700))
 
             for index, item in enumerate(items):
-                # Fila Eliminar
                 fila_del = ft.Row(
                     [
                         ft.Text(f"{item['nombre']} ({item['precio']})", size=14, color=ft.Colors.BLACK, expand=True),
@@ -115,7 +106,6 @@ class AdminPanelView:
                 )
                 self.lista_eliminar.controls.append(fila_del)
 
-                # Fila Disponibilidad
                 switch_disp = ft.Switch(
                     label=item['nombre'],
                     value=item['disponible'],
