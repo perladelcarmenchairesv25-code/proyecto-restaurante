@@ -6,9 +6,13 @@ class HomeView:
         self.navegar_fun = navegar_fun
 
         titulo = ft.Text("¡Bienvenidos al Restaurante!", size=28, weight="bold", color=ft.Colors.GREEN_900)
-        subtitulo = ft.Text("Selecciona tus platillos favoritos del menú del día", size=14, color=ft.Colors.BLACK54)
+        subtitulo = ft.Text("Selecciona una categoría para ver el menú", size=14, color=ft.Colors.BLACK54)
 
-        self.menu_clientes = ft.Column(spacing=15, scroll=ft.ScrollMode.AUTO, expand=True)
+        self.menu_clientes = ft.Column(
+            spacing=12,
+            expand=True,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        )
         self.cargar_menu_publico()
 
         btn_admin = ft.ElevatedButton(
@@ -34,27 +38,35 @@ class HomeView:
 
     def cargar_menu_publico(self):
         self.menu_clientes.controls.clear()
-        
-        for categoria, lista_items in self.page.productos.items():
-            self.menu_clientes.controls.append(
-                ft.Text(f"--- {categoria} ---", size=18, weight="bold", color=ft.Colors.GREEN_700)
+
+        def ir_a_menu(categoria):
+            self.page.categoria_actual = categoria
+            self.navegar_fun("/menu")
+
+        botones = [
+            ("Comida", "COMIDA", ft.Icons.RESTAURANT_MENU),
+            ("Bebida", "BEBIDAS", ft.Icons.LOCAL_DRINK),
+            ("Postres", "POSTRES", ft.Icons.ICECREAM),
+        ]
+
+        for texto, categoria, icono in botones:
+            boton = ft.ElevatedButton(
+                content=ft.Row(
+                    [
+                        ft.Icon(icono, color=ft.Colors.WHITE, size=20),
+                        ft.Text(texto, color=ft.Colors.WHITE, weight="bold"),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    spacing=10,
+                ),
+                width=240,
+                height=50,
+                style=ft.ButtonStyle(
+                    bgcolor="#2D5A27",
+                    shape=ft.RoundedRectangleBorder(radius=10),
+                ),
+                on_click=lambda _, cat=categoria: ir_a_menu(cat),
             )
-            for item in lista_items:
-                if item["disponible"]:
-                    tarjeta = ft.Container(
-                        content=ft.Column([
-                            ft.Text(item["nombre"], size=16, weight="bold", color=ft.Colors.BLACK),
-                            ft.Text(item["desc"], size=13, color=ft.Colors.BLACK54),
-                            ft.Text(item["precio"], size=14, weight="bold", color=ft.Colors.GREEN_800),
-                        ]),
-                        padding=10,
-                        bgcolor=ft.Colors.WHITE,
-                        border_radius=8,
-                        border=ft.Border(
-                            top=ft.BorderSide(1, ft.Colors.GREY_300),
-                            bottom=ft.BorderSide(1, ft.Colors.GREY_300),
-                            left=ft.BorderSide(1, ft.Colors.GREY_300),
-                            right=ft.BorderSide(1, ft.Colors.GREY_300)
-                        )
-                    )
-                    self.menu_clientes.controls.append(tarjeta)
+            self.menu_clientes.controls.append(
+                ft.Row([boton], alignment=ft.MainAxisAlignment.CENTER)
+            )
