@@ -1,5 +1,7 @@
 import flet as ft
 from views.home_view import HomeView
+from views.menu_view import MenuView
+from views.splash_view import SplashView
 from views.admin_login_view import AdminLoginView
 from views.admin_panel_view import AdminPanelView
 
@@ -26,8 +28,19 @@ def navegar_a(page: ft.Page):
         page.controls.clear()
         page.update() 
         
-        if ruta == "/home" or ruta == "/":
+        if ruta == "/" or ruta == "/splash":
+            vista = SplashView(page, cambiar_ruta)
+            if hasattr(vista, "content"):
+                vista.content.expand = True
+                page.add(vista.content)
+        elif ruta == "/home":
             vista = HomeView(page, cambiar_ruta)
+            if hasattr(vista, "content"):
+                vista.content.expand = True
+                page.add(vista.content)
+        elif ruta == "/menu":
+            categoria = getattr(page, "categoria_actual", "COMIDA")
+            vista = MenuView(page, categoria, cambiar_ruta)
             if hasattr(vista, "content"):
                 vista.content.expand = True
                 page.add(vista.content)
@@ -44,6 +57,8 @@ def navegar_a(page: ft.Page):
                 
         page.update()
 
-    cambiar_ruta("/home")
+    cambiar_ruta("/splash")
 
-ft.app(target=navegar_a, view=ft.AppView.WEB_BROWSER)
+
+if __name__ == "__main__":
+    ft.run(navegar_a, view=ft.AppView.WEB_BROWSER)
